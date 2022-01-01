@@ -4,6 +4,7 @@ var path = require('path');
 const pmguard = require('../modules/pmguard');
 const config = require('../config')
 
+
 const handleMessage = async (message, TG_OWNER_ID, tgbot, client) => {
     const getMediaInfo = (msg) => {
         switch (msg.type) {
