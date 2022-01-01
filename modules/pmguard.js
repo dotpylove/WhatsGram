@@ -9,8 +9,8 @@ async function setPmMsg(pmMsg, method){
     try{
         var setPm = await MongoClient.connect(DB_URL, {useNewUrlParser: true, useUnifiedTopology: true});
         method == 'update' ? 
-        await setPm.db('WhatsGram').collection('pmguard').updateOne({name: 'pmMsg'}, {$set: {pmMsg: pmMsg}}) : 
-        await setPm.db('WhatsGram').collection('pmguard').insertOne({name: 'pmMsg', pmMsg: pmMsg});
+        await setPm.db('Telegram').collection('pmguard').updateOne({name: 'pmMsg'}, {$set: {pmMsg: pmMsg}}) : 
+        await setPm.db('Telegram').collection('pmguard').insertOne({name: 'pmMsg', pmMsg: pmMsg});
         return 'success'
     }catch(err){
         return 'failed'
@@ -23,7 +23,7 @@ async function setPmMsg(pmMsg, method){
 async function readPmMsg(){
     try{
         var read = await MongoClient.connect(DB_URL, {useNewUrlParser: true, useUnifiedTopology: true});
-        var result = await read.db('WhatsGram').collection('pmguard').find({name: 'pmMsg'}).toArray();
+        var result = await read.db('Telegram').collection('pmguard').find({name: 'pmMsg'}).toArray();
         if(result[0] == undefined){
             return '';
         }else{
@@ -44,7 +44,7 @@ async function readPmMsg(){
 async function updateData(id, msgCount) {
     try {
         var update = await MongoClient.connect(DB_URL, { useNewUrlParser: true, useUnifiedTopology: true })
-        await update.db("WhatsGram").collection("pmguard").updateOne({ number: id }, { $set: { msgCount: msgCount } })
+        await update.db("Telegram").collection("pmguard").updateOne({ number: id }, { $set: { msgCount: msgCount } })
         return "updated_success"
 
     } catch (err) {
@@ -59,7 +59,7 @@ async function readDb(id) {
 
     try {
         var read = await MongoClient.connect(DB_URL, { useNewUrlParser: true, useUnifiedTopology: true })
-        var result = await read.db("WhatsGram").collection("pmguard").find({ number: id }).toArray()
+        var result = await read.db("Telegram").collection("pmguard").find({ number: id }).toArray()
         if (result[0] != undefined) {
             return ({
                 status: "found",
@@ -81,7 +81,7 @@ async function readDb(id) {
 async function addToDb(id) {
     try {
         var addData = await MongoClient.connect(DB_URL, { useNewUrlParser: true, useUnifiedTopology: true })
-        await addData.db("WhatsGram").collection("pmguard").insertOne({ number: id, msgCount: 1, allowed: false })
+        await addData.db("Telegram").collection("pmguard").insertOne({ number: id, msgCount: 1, allowed: false })
         return "added"
     } catch (err) {
         return "failed_to_add"
@@ -94,7 +94,7 @@ async function addToDb(id) {
 async function allow(id) {
     try {
         var update = await MongoClient.connect(DB_URL, { useNewUrlParser: true, useUnifiedTopology: true })
-        await update.db("WhatsGram").collection("pmguard").updateOne({ number: id }, { $set: { msgCount: 1, allowed: true } })
+        await update.db("Telegram").collection("pmguard").updateOne({ number: id }, { $set: { msgCount: 1, allowed: true } })
         fs.readFile(path.join(__dirname, `../temp/${id}.json`), { encoding: 'utf8' },
             async function(err, data) {
                 if (err) {
@@ -137,7 +137,7 @@ async function allow(id) {
 async function disAllow(id) {
     try {
         var updatewrite = await MongoClient.connect(DB_URL, { useNewUrlParser: true, useUnifiedTopology: true })
-        await updatewrite.db("WhatsGram").collection("pmguard").updateOne({ number: id }, { $set: { msgCount: 1, allowed: false } })
+        await updatewrite.db("Telegram").collection("pmguard").updateOne({ number: id }, { $set: { msgCount: 1, allowed: false } })
         fs.readFile(path.join(__dirname, `../temp/${id}.json`), { encoding: 'utf8' },
             async function(err, data) {
                 if (err) {} else {
@@ -169,7 +169,7 @@ async function handlePm(id, user) {
         } else {
             return {
                 action: false,
-                msg: pmMsg ? pmMsg.msg.replace(/\{name}/gi, user).replace(/\{wanrs}/gi, read.msgCount ? read.msgCount : 0) + '\n\nPowered by *WhatsGram*' : `Hello, *${user}*!\nMy Master is Busy As Of Now, You Can Wait For Sometime.\nIf He Needs To Talk To You, He Will Approve You!\nAnd do not spam else you will be muted/blocked.\n\nPowered by *WhatsGram*`
+                msg: pmMsg ? pmMsg.msg.replace(/\{name}/gi, user).replace(/\{wanrs}/gi, read.msgCount ? read.msgCount : 0) + '\n\nPowered by *Telegram*' : `Hello, *${user}*!\nMy Master is Busy As Of Now, You Can Wait For Sometime.\nIf He Needs To Talk To You, He Will Approve You!\nAnd do not spam else you will be muted/blocked.\n\nPowered by *Telegram*`
             }
         }
     } else if (read.status == "found" && read.allowed == false) { 
@@ -185,7 +185,7 @@ async function handlePm(id, user) {
             } else {
                 return {
                     action: false,
-                    msg: pmMsg ? pmMsg.msg.replace(/\{name}/gi, user).replace(/\{warns}/gi, read.msgCount ? read.msgCount : 0) + '\n\nPowered by *WhatsGram*' :  `Hello, *${user}*!\nMy Master is Busy As Of Now, You Can Wait For Sometime.\nIf He Needs To Talk To You, He Will Approve You!\nYou Have *${read.msgCount}/3 Of Warns*. And do not spam else you will be muted/blocked.\n\nPowered by *WhatsGram*`
+                    msg: pmMsg ? pmMsg.msg.replace(/\{name}/gi, user).replace(/\{warns}/gi, read.msgCount ? read.msgCount : 0) + '\n\nPowered by *Telegram*' :  `Hello, *${user}*!\nMy Master is Busy As Of Now, You Can Wait For Sometime.\nIf He Needs To Talk To You, He Will Approve You!\nYou Have *${read.msgCount}/3 Of Warns*. And do not spam else you will be muted/blocked.\n\nPowered by *Telegram*`
                 }
             }
         }
